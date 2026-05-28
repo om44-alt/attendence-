@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Attendance Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2, #ff758c);
+      background-size: 300% 300%;
+      animation: bgMove 8s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+      color: #fff;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1050px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      animation: fadeUp 0.9s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      top: -70px;
+      right: -70px;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .subtitle {
+      opacity: 0.85;
+      margin-bottom: 25px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: 600;
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 17px;
+      border: none;
+      border-radius: 16px;
+      outline: none;
+      font-size: 16px;
+      color: #222;
+      background: rgba(255, 255, 255, 0.92);
+      transition: 0.3s ease;
+      position: relative;
+    }
+
+    input:focus {
+      transform: scale(1.02);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25);
+    }
+
+    button {
+      margin-top: 22px;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 18px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #4b2b7f;
+      background: #fff;
+      transition: 0.3s ease;
+      position: relative;
+    }
+
+    button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .result-box {
+      margin-top: 22px;
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: none;
+      animation: pop 0.5s ease;
+      position: relative;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .big {
+      font-size: 42px;
+      font-weight: 800;
+      margin: 8px 0;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .good { color: #c8ffd9; }
+    .bad { color: #ffe1e1; }
+
+    .miss-section h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .range-wrap {
+      margin-top: 18px;
+      position: relative;
+    }
+
+    input[type="range"] {
+      accent-color: #fff;
+      cursor: pointer;
+    }
+
+    .miss-count {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+
+    .options {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      position: relative;
+    }
+
+    .option {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.17);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: 0.3s ease;
+    }
+
+    .option:hover {
+      transform: translateY(-5px) scale(1.02);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .option strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .tiny {
+      font-size: 14px;
+      opacity: 0.88;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 14px;
+      opacity: 0.82;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ffe1e1;
+      font-weight: 700;
+      display: none;
+      position: relative;
+    }
+
+    @media (max-width: 850px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Attendance Calculator</h1>
+      <p class="subtitle">Enter total classes and absent classes. It will show your current attendance and how many classes you must attend to reach 85%.</p>
+
+      <label for="totalClasses">Total number of classes</label>
+      <input type="number" id="totalClasses" placeholder="Example: 60" min="1" />
+
+      <label for="absentClasses">Number of absent classes</label>
+      <input type="number" id="absentClasses" placeholder="Example: 12" min="0" />
+
+      <label for="targetAttendance">Target attendance percentage</label>
+      <input type="number" id="targetAttendance" value="85" min="1" max="100" />
+
+      <button onclick="calculateAttendance()">Calculate Attendance</button>
+
+      <p class="error" id="errorMsg">Please enter valid numbers.</p>
+
+      <div class="result-box" id="mainResult">
+        <p>Your current attendance is</p>
+        <div class="big" id="attendancePercent">0%</div>
+        <p id="attendanceStatus" class="status"></p>
+        <p class="footer-note" id="classesNeededText"></p>
+      </div>
+    </div>
+
+    <div class="card miss-section">
+      <h2>What if you miss classes?</h2>
+      <p class="subtitle">Choose how many upcoming classes you may miss. The result will update automatically.</p>
+
+      <div class="range-wrap">
+        <input type="range" id="missRange" min="1" max="20" value="1" oninput="showMissResult()" />
+        <p class="miss-count">Missing: <span id="missValue">1</span> class/classes</p>
+      </div>
+
+      <div class="result-box" id="missResult">
+        <p>Attendance after missing selected classes</p>
+        <div class="big" id="afterMissPercent">0%</div>
+        <p class="footer-note" id="afterMissNeedText"></p>
+      </div>
+
+      <div class="options" id="quickOptions">
+        <div class="option" onclick="setMiss(1)">
+          <strong>Miss Today</strong>
+          <span class="tiny">Check attendance after missing 1 class.</span>
+        </div>
+        <div class="option" onclick="setMiss(2)">
+          <strong>Miss Tomorrow Also</strong>
+          <span class="tiny">Check attendance after missing 2 classes.</span>
+        </div>
+        <div class="option" onclick="setMiss(3)">
+          <strong>Miss 3 Classes</strong>
+          <span class="tiny">Check attendance after missing 3 classes.</span>
+        </div>
+        <div class="option" onclick="setMiss(5)">
+          <strong>Miss 5 Classes</strong>
+          <span class="tiny">Check attendance after missing 5 classes.</span>
+        </div>
+      </div>
+
+      <p class="footer-note">Use the slider for any number from 1 to 20. You can increase the max value in HTML if you want more.</p>
+    </div>
+  </div>
+
+  <script>
+    let total = 0;
+    let absent = 0;
+    let present = 0;
+    let target = 85;
+
+    function calculateNeededClasses(totalClasses, absentClasses, targetPercent) {
+      let presentClasses = totalClasses - absentClasses;
+      let needed = 0;
+
+      while (((presentClasses + needed) / (totalClasses + needed)) * 100 < targetPercent) {
+        needed++;
+      }
+
+      return needed;
+    }
+
+    function calculateAttendance() {
+      total = Number(document.getElementById("totalClasses").value);
+      absent = Number(document.getElementById("absentClasses").value);
+      target = Number(document.getElementById("targetAttendance").value);
+
+      const errorMsg = document.getElementById("errorMsg");
+      const mainResult = document.getElementById("mainResult");
+
+      if (total <= 0 || absent < 0 || absent > total || target <= 0 || target > 100) {
+        errorMsg.style.display = "block";
+        mainResult.style.display = "none";
+        document.getElementById("missResult").style.display = "none";
+        return;
+      }
+
+      errorMsg.style.display = "none";
+      present = total - absent;
+
+      const attendance = (present / total) * 100;
+      const needed = calculateNeededClasses(total, absent, target);
+
+      document.getElementById("attendancePercent").innerText = attendance.toFixed(2) + "%";
+
+      const status = document.getElementById("attendanceStatus");
+      if (attendance >= target) {
+        status.innerText = "Safe attendance";
+        status.className = "status good";
+        document.getElementById("classesNeededText").innerText = "You already have " + target + "% or more attendance.";
+      } else {
+        status.innerText = "Need to attend more classes";
+        status.className = "status bad";
+        document.getElementById("classesNeededText").innerText = "You need to attend " + needed + " more continuous class/classes to reach " + target + "%.";
+      }
+
+      mainResult.style.display = "block";
+      showMissResult();
+    }
+
+    function showMissResult() {
+      if (total <= 0) return;
+
+      const miss = Number(document.getElementById("missRange").value);
+      document.getElementById("missValue").innerText = miss;
+
+      const newTotal = total + miss;
+      const newAbsent = absent + miss;
+      const newPresent = present;
+
+      const afterMissAttendance = (newPresent / newTotal) * 100;
+      const neededAfterMiss = calculateNeededClasses(newTotal, newAbsent, target);
+
+      document.getElementById("afterMissPercent").innerText = afterMissAttendance.toFixed(2) + "%";
+      document.getElementById("afterMissNeedText").innerText = "After missing " + miss + " class/classes, you need to attend " + neededAfterMiss + " continuous class/classes to reach " + target + "%.";
+      document.getElementById("missResult").style.display = "block";
+    }
+
+    function setMiss(value) {
+      document.getElementById("missRange").value = value;
+      showMissResult();
+    }
+  </script>
+</body>
+</html>
